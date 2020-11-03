@@ -144,11 +144,11 @@
            <x>0</x>
            <y>120</y>
            <width>191</width>
-           <height>251</height>
+           <height>401</height>
           </rect>
          </property>
          <property name="title">
-          <string>Hair System</string>
+          <string>Cloth System</string>
          </property>
          <widget class="QGroupBox" name="groupBox_3">
           <property name="geometry">
@@ -188,7 +188,7 @@
             </rect>
            </property>
            <property name="text">
-            <string>Path</string>
+            <string>Lines</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -201,41 +201,99 @@
             <x>10</x>
             <y>120</y>
             <width>191</width>
-            <height>91</height>
+            <height>201</height>
            </rect>
           </property>
           <property name="title">
-           <string>Initializer</string>
+           <string>Properties</string>
           </property>
-          <widget class="QRadioButton" name="radioButton_3">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>60</y>
-             <width>122</width>
-             <height>25</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Curly hair</string>
-           </property>
-          </widget>
-          <widget class="QRadioButton" name="radioButton_4">
+          <widget class="QCheckBox" name="checkBox">
            <property name="geometry">
             <rect>
              <x>10</x>
              <y>30</y>
-             <width>122</width>
+             <width>105</width>
              <height>25</height>
             </rect>
            </property>
            <property name="text">
-            <string>Rope</string>
+            <string>Fix</string>
            </property>
            <property name="checked">
             <bool>true</bool>
            </property>
           </widget>
+          <widget class="QSpinBox" name="spinBox">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>80</y>
+             <width>126</width>
+             <height>42</height>
+            </rect>
+           </property>
+           <property name="minimum">
+            <number>4</number>
+           </property>
+           <property name="value">
+            <number>10</number>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="spinBox_2">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>150</y>
+             <width>126</width>
+             <height>42</height>
+            </rect>
+           </property>
+           <property name="minimum">
+            <number>4</number>
+           </property>
+           <property name="value">
+            <number>10</number>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>60</y>
+             <width>121</width>
+             <height>19</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>N Particles</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_2">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>130</y>
+             <width>121</width>
+             <height>19</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>M Particles</string>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QPushButton" name="pushButton">
+          <property name="geometry">
+           <rect>
+            <x>50</x>
+            <y>330</y>
+            <width>103</width>
+            <height>36</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Reset</string>
+          </property>
          </widget>
         </widget>
        </widget>
@@ -267,6 +325,11 @@
     <slot>uiPaintPath(bool)</slot>
     <slot>uiInitializerRope(bool)</slot>
     <slot>uiInitializerCurly(bool)</slot>
+    <slot>uiFix(bool)</slot>
+    <slot>uiReset()</slot>
+    <slot>slot1()</slot>
+    <slot>uiXParticles(int)</slot>
+    <slot>uiYParticles(int)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -353,34 +416,66 @@
    </hints>
   </connection>
   <connection>
-   <sender>radioButton_4</sender>
-   <signal>clicked(bool)</signal>
+   <sender>checkBox</sender>
+   <signal>toggled(bool)</signal>
    <receiver>glwidget</receiver>
-   <slot>uiInitializerRope(bool)</slot>
+   <slot>uiFix(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>668</x>
+     <x>677</x>
      <y>291</y>
     </hint>
     <hint type="destinationlabel">
-     <x>519</x>
-     <y>310</y>
+     <x>505</x>
+     <y>299</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>radioButton_3</sender>
-   <signal>clicked(bool)</signal>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
    <receiver>glwidget</receiver>
-   <slot>uiInitializerCurly(bool)</slot>
+   <slot>uiXParticles(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>700</x>
-     <y>323</y>
+     <x>720</x>
+     <y>327</y>
     </hint>
     <hint type="destinationlabel">
-     <x>546</x>
-     <y>385</y>
+     <x>555</x>
+     <y>324</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>glwidget</receiver>
+   <slot>uiYParticles(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>768</x>
+     <y>397</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>547</x>
+     <y>361</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>released()</signal>
+   <receiver>glwidget</receiver>
+   <slot>uiReset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>701</x>
+     <y>478</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>473</x>
+     <y>489</y>
     </hint>
    </hints>
   </connection>

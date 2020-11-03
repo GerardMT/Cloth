@@ -37,11 +37,13 @@ SOURCES += \
     mesh.cpp \
     object.cpp \
     particle.cpp \
+    particle_cloth_initializer_plane.cpp \
     particle_emitter_initializer_fountain.cpp \
     particle_emitter_initializer_semi_sphere.cpp \
     particle_emitter_initializer_waterfall.cpp \
     particle_hair_initializer_curly.cpp \
     particle_hair_initializer_single.cpp \
+    particle_system_cloth.cpp \
     particle_system_emitter.cpp \
     particle_system_hair.cpp \
     solver_euler.cpp \
@@ -68,6 +70,8 @@ HEADERS  += \
     object.h \
     paint_gl.h \
     particle.h \
+    particle_cloth_initializer.h \
+    particle_cloth_initializer_plane.h \
     particle_emitter_initializer.h \
     particle_emitter_initializer_fountain.h \
     particle_emitter_initializer_semi_sphere.h \
@@ -75,6 +79,7 @@ HEADERS  += \
     particle_hair_initializer.h \
     particle_hair_initializer_curly.h \
     particle_hair_initializer_single.h \
+    particle_system_cloth.h \
     particle_system_emitter.h \
     particle_system_hair.h \
     solver.h \

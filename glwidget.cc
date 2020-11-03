@@ -3,6 +3,7 @@
 #include "collider_plane.h"
 #include "collider_sphere.h"
 #include "collider_triangle.h"
+#include "particle_cloth_initializer_plane.h"
 #include "solver_euler.h"
 #include "solver_semi_implicit_euler.h"
 #include "solver_verlet.h"
@@ -33,13 +34,12 @@ GLWidget::~GLWidget()
     delete solver_euler_;
     delete solver_semi_implicit_euler_;
 
-    delete particles_system_hair;
+    delete particles_system_cloth_;
 
     delete force_field_gravity_;
     delete force_field_drag_;
 
-    delete particle_hair_initializer_single_;
-    delete particle_hair_initializer_curly_;
+    delete particle_cloth_initializer_plane_;
 }
 
 
@@ -61,16 +61,15 @@ void GLWidget::initializeGL()
     solver_semi_implicit_euler_ = new SolverSemiImplicitEuler();
     solver_verlet_ = new SolverVerlet();
 
-    particle_hair_initializer_single_ = new ParticleHairInitializerSingle();
-    particle_hair_initializer_curly_ = new ParticleHairInitializerCurly(glm::vec3(0.0, 0.0, 0.0));
+    particle_cloth_initializer_plane_ = new ParticleClothInitializerPlane(10, 10);
 
-    particles_system_hair = new ParticleSystemHair(*solver_verlet_, *particle_hair_initializer_single_);
-    paint_gl_.push_back(particles_system_hair);
+    particles_system_cloth_ = new ParticleSystemCloth(*solver_verlet_, *particle_cloth_initializer_plane_);
+    paint_gl_.push_back(particles_system_cloth_);
 
     force_field_gravity_ = new ForceFieldGravity();
-    particles_system_hair->addForceField(*force_field_gravity_);
+    particles_system_cloth_->addForceField(*force_field_gravity_);
     force_field_drag_ = new ForceFieldDrag(0.1);
-    particles_system_hair->addForceField(*force_field_drag_);
+    particles_system_cloth_->addForceField(*force_field_drag_);
 
     float bouncing = 0.5;
     float friction = 0.2;
@@ -78,19 +77,19 @@ void GLWidget::initializeGL()
     Collider *c;
     c = new ColliderPlane(glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, -1.0, 0.0), bouncing, friction);
     box->addCollider(*c);
-    particles_system_hair->addCollider(*c);
+    particles_system_cloth_->addCollider(*c);
     c = new ColliderPlane(glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 0.0, -1.0), bouncing, friction);
     box->addCollider(*c);
-    particles_system_hair->addCollider(*c);
+    particles_system_cloth_->addCollider(*c);
     c = new ColliderPlane(glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, 0.0, 1.0), bouncing, friction);
     box->addCollider(*c);
-    particles_system_hair->addCollider(*c);
+    particles_system_cloth_->addCollider(*c);
     c = new ColliderPlane(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(-1.0, 0.0, 0.0), bouncing, friction);
     box->addCollider(*c);
-    particles_system_hair->addCollider(*c);
+    particles_system_cloth_->addCollider(*c);
     c = new ColliderPlane(glm::vec3(1.0, 0.0, 0.0), glm::vec3(1.0, 0.0, 0.0), bouncing, friction);
     box->addCollider(*c);
-    particles_system_hair->addCollider(*c);
+    particles_system_cloth_->addCollider(*c);
 
     m = new Mesh();
     Mesh::ReadFromPly("../model/sphere.ply", *m);
@@ -103,7 +102,7 @@ void GLWidget::initializeGL()
 
     c = new ColliderSphere(sphere_pos, 0.5, 0.8, 0.5);
     sphere->addCollider(*c);
-    particles_system_hair->addCollider(*c);
+    particles_system_cloth_->addCollider(*c);
 
     glewInit();
 
@@ -252,7 +251,7 @@ void GLWidget::paintGL() {
     if (move_) {
         glm::vec3 trans = camera_.up_ * static_cast<float>(-move_y_) / static_cast<float>(camera_.height_) + camera_.right_ * static_cast<float>(move_x_) / static_cast<float>(camera_.width_);
         glm::mat4 m(1.0);
-        particles_system_hair->transform(glm::translate(m, trans));
+        particles_system_cloth_->transform(glm::translate(m, trans));
 
         move_x_ = 0;
         move_y_ = 0;
@@ -260,7 +259,7 @@ void GLWidget::paintGL() {
 
     camera_.compute_view_projection();
 
-    //dt_ = 0.01666666f; // TODO DEBUG
+    dt_ = 0.01666666f; // TODO DEBUG
 
     //cout << camera_.azimuth_ << " " << camera_.inclination_ << endl;
     //cout << camera_.front_.x << " " << camera_.front_.y << " " << camera_.front_.z << endl;
@@ -275,44 +274,58 @@ void GLWidget::paintGL() {
 void GLWidget::uiSolverEuler(bool v)
 {
     if (v) {
-        particles_system_hair->solver(*solver_euler_);
+        particles_system_cloth_->solver(*solver_euler_);
     }
 }
 
 void GLWidget::uiSolverSemiImplicitEuler(bool v)
 {
     if (v) {
-        particles_system_hair->solver(*solver_semi_implicit_euler_);
+        particles_system_cloth_->solver(*solver_semi_implicit_euler_);
     }
 }
 
 void GLWidget::uiSolverVerlet(bool v)
 {
     if (v) {
-        particles_system_hair->solver(*solver_verlet_);
+        particles_system_cloth_->solver(*solver_verlet_);
     }
 }
 
 void GLWidget::uiPaintParticles(bool v)
 {
-    particles_system_hair->paint_particles_ = v;
+    particles_system_cloth_->paint_particles_ = v;
 }
 
 void GLWidget::uiPaintPath(bool v)
 {
-    particles_system_hair->paint_path_ = v;
+    particles_system_cloth_->paint_lines_ = v;
 }
 
-void GLWidget::uiInitializerRope(bool v)
+void GLWidget::uiFix(bool v)
 {
+    particle_cloth_initializer_plane_->fixed_ = v;
+
     if (v) {
-        particles_system_hair->particleInitializer(*particle_hair_initializer_single_);
+        particles_system_cloth_->initialize();
+    } else {
+        for (auto &p : particles_system_cloth_->particles_) {
+            p.fixed_  = false;
+        }
     }
 }
 
-void GLWidget::uiInitializerCurly(bool v)
+void GLWidget::uiReset()
 {
-    if (v) {
-        particles_system_hair->particleInitializer(*particle_hair_initializer_curly_);
-    }
+    particles_system_cloth_->initialize();
+}
+
+void GLWidget::uiXParticles(int x)
+{
+    particle_cloth_initializer_plane_->x_particles_ = x;
+}
+
+void GLWidget::uiYParticles(int y)
+{
+    particle_cloth_initializer_plane_->y_particles_ = y;
 }

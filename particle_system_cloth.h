@@ -1,11 +1,11 @@
-#ifndef PARTICLESYSTEMHAIR_H
-#define PARTICLESYSTEMHAIR_H
+#ifndef PARTICLESYSTEMCLOTH_H
+#define PARTICLESYSTEMCLOTH_H
 
 #include "collider.h"
 #include "force.h"
 #include "force_field.h"
 #include "paint_gl.h"
-#include "particle_hair_initializer.h"
+#include "particle_cloth_initializer.h"
 #include "solver.h"
 
 #include <QOpenGLShaderProgram>
@@ -13,12 +13,12 @@
 
 using namespace std;
 
-class ParticleSystemHair : public PaintGL, public Transform
+class ParticleSystemCloth : public PaintGL, public Transform
 {
 public:
-    ParticleSystemHair(Solver &s, ParticleHairInitializer &i);
+    ParticleSystemCloth(Solver &s, ParticleClothInitializer &i);
 
-    ~ParticleSystemHair();
+    ~ParticleSystemCloth();
 
     void addForceField(ForceField &f);
 
@@ -26,7 +26,9 @@ public:
 
     void solver(Solver &s);
 
-    void particleInitializer(ParticleHairInitializer &i);
+    void particleInitializer(ParticleClothInitializer &i);
+
+    void initialize();
 
     void initialieGL() override;
 
@@ -37,17 +39,23 @@ public:
     float life_time_;
 
     bool paint_particles_;
-    bool paint_path_;
-
-private:
-    unsigned int path_length_;
+    bool paint_lines_;
 
     vector<Particle> particles_;
+
+private:
+    unsigned int x_particles_;
+    unsigned int y_particles_;
+
+    unsigned int n_triangles_;
+
     vector<Force *> forces_;
 
     const Solver *solver_;
     vector<ForceField *> force_fields_;
     vector<Collider *> collliders_;
+
+    ParticleClothInitializer *initializer_;
 
     QOpenGLShaderProgram program_particles_;
 
@@ -58,8 +66,9 @@ private:
 
     QOpenGLShaderProgram program_path_;
 
-    GLuint vao_path_;
-    GLuint vbo_path_;
+    GLuint vao_mesh_;
+    GLuint vbo_mesh_;
+    GLuint ebo_mesh_;
 };
 
-#endif // PARTICLESYSTEMHAIR_H
+#endif // PARTICLESYSTEMCLOTH_H

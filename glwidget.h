@@ -5,10 +5,9 @@
 #include "force_field_drag.h"
 #include "force_field_gravity.h"
 #include "object.h"
-#include "particle_hair_initializer_curly.h"
-#include "particle_hair_initializer_single.h"
+#include "particle_cloth_initializer_plane.h"
+#include "particle_system_cloth.h"
 #include "particle_system_emitter.h"
-#include "particle_system_hair.h"
 #include "solver.h"
 
 #include <GL/glew.h>
@@ -52,10 +51,9 @@ private:
     Solver *solver_semi_implicit_euler_;
     Solver *solver_verlet_;
 
-    ParticleSystemHair *particles_system_hair;
+    ParticleSystemCloth *particles_system_cloth_;
 
-    ParticleHairInitializerSingle *particle_hair_initializer_single_;
-    ParticleHairInitializerCurly *particle_hair_initializer_curly_;
+    ParticleClothInitializerPlane *particle_cloth_initializer_plane_;
 
     ForceFieldGravity *force_field_gravity_;
     ForceFieldDrag *force_field_drag_;
@@ -101,9 +99,14 @@ private slots:
 
     void uiPaintPath(bool v);
 
-    void uiInitializerRope(bool v);
+    void uiFix(bool v);
 
-    void uiInitializerCurly(bool v);
+    void uiReset();
+
+    void uiXParticles(int x);
+
+    void uiYParticles(int y);
+
 };
 
 #endif  //  GLWIDGET_H_
