@@ -259,7 +259,7 @@ void GLWidget::paintGL() {
 
     camera_.compute_view_projection();
 
-    dt_ = 0.01666666f; // TODO DEBUG
+    // dt_ = 0.01666666f; // TODO DEBUG
 
     //cout << camera_.azimuth_ << " " << camera_.inclination_ << endl;
     //cout << camera_.front_.x << " " << camera_.front_.y << " " << camera_.front_.z << endl;
