@@ -8,7 +8,7 @@ The cloth system is based on discrete particles simulation and virtual springs.
 - Move the cloth anchor points (`mouse right click` + `mouse movement`)
 - Numerical solvers implemented:
 	- Euler
-	- Semi Implicit Euler
+	- Semi-implicit Euler
 	- Verlet
 - Collider types implemented:
 	- Sphere
@@ -20,16 +20,16 @@ The cloth system is based on discrete particles simulation and virtual springs.
 - Implemented spring force between particles.
 
 ## Known issues
-- Some particles scape the box on the edges/vertices. This is due to not cheking for a collision again once the particle has been corrected. This can be easly fix at the cost of performance.
+- Some particles scape the box on the edges/vertices. This is due to not checking for a collision again once the particle has been corrected. This can be easly fix at the cost of performance.
 
-## Requirments
+## Requirements
 The software requires the following libraries to be installed:
 - GLEW
 - Eigen
 - QT 5
 
 ## Build
-Clone the repositroy:
+Clone the repository:
 
 	git clone https://github.com/GerardMT/Cloth
 	cd Cloth
