@@ -53,6 +53,6 @@ Once build, run the project from the build directory:
 
 ## Other
 Have a look at my other physics based projects:
+- [Particles](https://github.com/GerardMT/Particles)
 - [Hair](https://github.com/GerardMT/Hair)
-- [Cloth](https://github.com/GerardMT/Cloth)
 - [Rigid-Bodies](https://github.com/GerardMT/Rigid-Bodies)
