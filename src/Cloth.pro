@@ -1,22 +1,22 @@
 QT += core gui opengl
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
-TARGET = Particles
+TARGET = cloth
 TEMPLATE = app
 
 CONFIG += c++14
 CONFIG(release, release|debug):QMAKE_CXXFLAGS += -Wall -O2
 
-CONFIG(release, release|debug):DESTDIR = release/
-CONFIG(release, release|debug):OBJECTS_DIR = release/
-CONFIG(release, release|debug):MOC_DIR = release/
-CONFIG(release, release|debug):UI_DIR = release/
+CONFIG(release, release|debug):DESTDIR = ../build/release/
+CONFIG(release, release|debug):OBJECTS_DIR = ../build/release/
+CONFIG(release, release|debug):MOC_DIR = ../build/release/
+CONFIG(release, release|debug):UI_DIR = ../build/release/
 
-CONFIG(debug, release|debug):DESTDIR = debug/
-CONFIG(debug, release|debug):OBJECTS_DIR = debug/
-CONFIG(debug, release|debug):MOC_DIR = debug/
-CONFIG(debug, release|debug):UI_DIR = debug/
+CONFIG(debug, release|debug):DESTDIR = ../build/debug/
+CONFIG(debug, release|debug):OBJECTS_DIR = ../build/debug/
+CONFIG(debug, release|debug):MOC_DIR = ../build/debug/
+CONFIG(debug, release|debug):UI_DIR = ../build/debug/
 
 INCLUDEPATH += /usr/include/eigen3/
 
@@ -92,10 +92,10 @@ FORMS    += \
     main_window.ui
 
 RESOURCES += \
-    shader/particle.frag \
-    shader/particle.vert \
-    shader/object.frag \
-    shader/object.vert \
-    shader/path.frag \
-    shader/path.vert
+    ../res/shader/particle.frag \
+    ../res/shader/particle.vert \
+    ../res/shader/object.frag \
+    ../res/shader/object.vert \
+    ../res/shader/path.frag \
+    ../res/shader/path.vert
 

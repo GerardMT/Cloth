@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Particles</string>
+   <string>Cloth</string>
   </property>
   <widget class="QWidget" name="widget">
    <property name="minimumSize">

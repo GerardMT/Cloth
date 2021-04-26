@@ -1,4 +1,4 @@
-#include "particle_system_cloth.h"
+#include "particle_system_hair.h"
 
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
@@ -17,62 +17,60 @@ const float quad_vertices[] = {
   -1.0f,  1.0f, 0.0f
 };
 
-ParticleSystemCloth::ParticleSystemCloth(Solver &s, ParticleClothInitializer &i)
+ParticleSystemHair::ParticleSystemHair(Solver &s, ParticleHairInitializer &i)
 {
     solver_ = &s;
 
     paint_particles_ = true;
-    paint_lines_ = true;
+    paint_path_ = true;
 
-    initializer_ = &i;
+    i.initialize(particles_, forces_, path_length_);
 }
 
-ParticleSystemCloth::~ParticleSystemCloth()
+ParticleSystemHair::~ParticleSystemHair()
 {
     glDeleteVertexArrays(1, &vao_particles_);
     glDeleteBuffers(1, &vbo_particles_);
     glDeleteBuffers(1, &tbo_particles_);
     glDeleteBuffers(1, &cdbo_particles_);
 
-    glDeleteVertexArrays(1, &vao_mesh_);
-    glDeleteBuffers(1, &vbo_mesh_);
-    glDeleteBuffers(1, &ebo_mesh_);
+    glDeleteVertexArrays(1, &vao_path_);
+    glDeleteBuffers(1, &vbo_path_);
 
     for (auto f : forces_) {
         delete f;
     }
 }
 
-void ParticleSystemCloth::addForceField(ForceField &f)
+void ParticleSystemHair::addForceField(ForceField &f)
 {
     force_fields_.push_back(&f);
 }
 
-void ParticleSystemCloth::addCollider(Collider &c)
+void ParticleSystemHair::addCollider(Collider &c)
 {
     collliders_.push_back(&c);
 }
 
-void ParticleSystemCloth::solver(Solver &s)
+void ParticleSystemHair::solver(Solver &s)
 {
     solver_ = &s;
 }
 
-void ParticleSystemCloth::particleInitializer(ParticleClothInitializer &i)
+void ParticleSystemHair::particleInitializer(ParticleHairInitializer &i)
 {
-    initializer_ = &i;
-    initialize();
+    i.initialize(particles_, forces_, path_length_);
 }
 
-void ParticleSystemCloth::initialieGL()
+void ParticleSystemHair::initialieGL()
 {
     string vert_str;
-    readFile("../shader/particle.vert", vert_str);
+    readFile("../../res/shader/particle.vert", vert_str);
     program_particles_.addShaderFromSourceCode(QOpenGLShader::Vertex, vert_str.c_str());
     cout << program_particles_.log().toUtf8().constData() << endl;
 
     string frag_str;
-    readFile("../shader/particle.frag", frag_str);
+    readFile("../../res/shader/particle.frag", frag_str);
     program_particles_.addShaderFromSourceCode(QOpenGLShader::Fragment, frag_str.c_str());
     cout << program_particles_.log().toUtf8().constData() << endl;
 
@@ -99,32 +97,28 @@ void ParticleSystemCloth::initialieGL()
     glEnableVertexAttribArray(2);
     glVertexAttribDivisor(2, 1);
 
-    readFile("../shader/path.vert", vert_str);
+    readFile("../../res/shader/path.vert", vert_str);
     program_path_.addShaderFromSourceCode(QOpenGLShader::Vertex, vert_str.c_str());
     cout << program_path_.log().toUtf8().constData() << endl;
 
-    readFile("../shader/path.frag", frag_str);
+    readFile("../../res/shader/path.frag", frag_str);
     program_path_.addShaderFromSourceCode(QOpenGLShader::Fragment, frag_str.c_str());
     cout << program_path_.log().toUtf8().constData() << endl;
 
     program_path_.link();
 
-    glGenVertexArrays(1, &vao_mesh_);
-    glBindVertexArray(vao_mesh_);
+    glGenVertexArrays(1, &vao_path_);
+    glBindVertexArray(vao_path_);
 
-    glGenBuffers(1, &vbo_mesh_); // TODO Resue particles tbo
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_mesh_);
+    glGenBuffers(1, &vbo_path_); // TODO Resue particles tbo
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_path_);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
 
-    glGenBuffers(1, &ebo_mesh_);
-
     glBindVertexArray(0);
-
-    initialize();
 }
 
-void ParticleSystemCloth::paintGL(float dt, const Camera &camera)
+void ParticleSystemHair::paintGL(float dt, const Camera &camera)
 {
     for (auto &p : particles_) {
         p.force_ = glm::vec3(0.0);
@@ -151,7 +145,7 @@ void ParticleSystemCloth::paintGL(float dt, const Camera &camera)
         }
     }
 
-    if (paint_lines_) {
+    if (paint_path_) {
         program_path_.bind();
         glUniformMatrix4fv(program_path_.uniformLocation("view_projection"), 1, GL_FALSE, glm::value_ptr(camera.view_projection));
 
@@ -162,14 +156,14 @@ void ParticleSystemCloth::paintGL(float dt, const Camera &camera)
             pos[i] = particles_[i].pos_;
         }
 
-        glBindVertexArray(vao_mesh_);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_mesh_);
+        glBindVertexArray(vao_path_);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_path_);
         glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * particles_.size(), &pos[0], GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glDrawElements(GL_TRIANGLES, n_triangles_ * 3, GL_UNSIGNED_INT, (void *) 0);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        for (unsigned int i = 0; i < particles_.size(); i += path_length_) {
+            glDrawArrays(GL_LINE_STRIP, i, path_length_);
+        }
 
         glBindVertexArray(0);
     }
@@ -223,7 +217,7 @@ void ParticleSystemCloth::paintGL(float dt, const Camera &camera)
     }
 }
 
-void ParticleSystemCloth::transform(glm::mat4 m)
+void ParticleSystemHair::transform(glm::mat4 m)
 {
     for (auto &p : particles_) {
         if (p.fixed_) {
@@ -231,33 +225,4 @@ void ParticleSystemCloth::transform(glm::mat4 m)
             p.pos_pre_ = p.pos_;
         }
     }
-}
-
-void ParticleSystemCloth::initialize()
-{
-    initializer_->initialize(particles_, forces_, x_particles_, y_particles_);
-
-    n_triangles_ = x_particles_ * y_particles_ * 2;
-
-    vector<unsigned int> indices;
-    indices.resize(n_triangles_ * 3);
-
-    unsigned int j = 0;
-    for (unsigned int x = 0; x < x_particles_ - 1; ++x) {
-        for (unsigned int y = 0; y < y_particles_ - 1; ++y) {
-            indices[j + 0] = x_particles_ * y + x;
-            indices[j + 1] = x_particles_ * y + x + 1;
-            indices[j + 2] = x_particles_ * (y + 1) + x;
-
-            indices[j + 3] = x_particles_ * y + x + 1;
-            indices[j + 4] = x_particles_ * (y + 1) + x + 1;
-            indices[j + 5] = x_particles_ * (y + 1) + x;
-            j += 6;
-        }
-    }
-
-    glBindVertexArray(vao_mesh_);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_mesh_);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(decltype(indices)::value_type) * indices.size(), &indices[0], GL_STATIC_DRAW);
-    glBindVertexArray(0);
 }

@@ -51,7 +51,7 @@ void GLWidget::initializeGL()
 
     Mesh *m;
     m = new Mesh();
-    Mesh::ReadFromPly("../model/cube.ply", *m);
+    Mesh::ReadFromPly("../../res/model/cube.ply", *m);
 
     Object *box = new Object(*m, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec4(1.0, 0.0, 0.0, 1.0));
     objects_.push_back(box);
@@ -92,7 +92,7 @@ void GLWidget::initializeGL()
     particles_system_cloth_->addCollider(*c);
 
     m = new Mesh();
-    Mesh::ReadFromPly("../model/sphere.ply", *m);
+    Mesh::ReadFromPly("../../res/model/sphere.ply", *m);
 
     glm::vec3 sphere_pos = glm::vec3(0.0f, 0.0, 0.0f);
 
