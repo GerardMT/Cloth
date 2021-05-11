@@ -1,5 +1,5 @@
 # Cloth
-A simple CPU driven cloth system with an OpenGL renderer. Used Qt 5 as the base framework.
+A simple CPU driven cloth system with an OpenGL renderer. Qt 5 used as the base framework.
 
 The cloth system is based on discrete particles simulation and virtual springs.
 
